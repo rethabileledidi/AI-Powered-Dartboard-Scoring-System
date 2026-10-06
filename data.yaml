@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 57
+names: ['bullseye', 'double_1', 'double_10', 'double_11', 'double_12', 'double_13', 'double_14', 'double_15', 'double_16', 'double_17', 'double_18', 'double_19', 'double_2', 'double_20', 'double_3', 'double_4', 'double_5', 'double_6', 'double_7', 'double_8', 'double_9', 'miss', 'single_1', 'single_10', 'single_11', 'single_12', 'single_13', 'single_14', 'single_15', 'single_16', 'single_17', 'single_18', 'single_20', 'single_3', 'single_4', 'single_5', 'single_6', 'single_7', 'single_8', 'single_9', 'tdouble_19', 'triple_1', 'triple_12', 'triple_13', 'triple_15', 'triple_16', 'triple_17', 'triple_18', 'triple_19', 'triple_2', 'triple_20', 'triple_3', 'triple_5', 'triple_6', 'triple_7', 'triple_8', 'triple_9']
+
+roboflow:
+  workspace: aidartboard-dataset
+  project: dartboard-scoring-system-arujo
+  version: 5
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/aidartboard-dataset/dartboard-scoring-system-arujo/dataset/5

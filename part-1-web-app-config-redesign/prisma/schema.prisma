@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  games     GamePlayer[]
+  throws    Throw[]
+  
+  @@map("players")
+}
+
+model Game {
+  id          String   @id @default(cuid())
+  mode        String   // "501", "301", "Cricket"
+  status      String   @default("active") // "active", "paused", "completed", "stopped"
+  startedAt   DateTime @default(now())
+  endedAt     DateTime?
+  pausedAt    DateTime?
+  currentPlayerId String?
+  isPaused    Boolean  @default(false)
+  
+  players     GamePlayer[]
+  throws      Throw[]
+  
+  @@map("games")
+}
+
+model GamePlayer {
+  id      String @id @default(cuid())
+  gameId  String
+  playerId String
+  finalScore Int @default(0)
+  position   Int? // 1st, 2nd, 3rd, etc.
+  turnOrder  Int @default(0) // Order in which players take turns
+  isActive   Boolean @default(false) // Whether this player is currently taking their turn
+  
+  game    Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player  Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  @@unique([gameId, playerId])
+  @@map("game_players")
+}
+
+model Throw {
+  id         String   @id @default(cuid())
+  gameId     String
+  playerId   String
+  x          Float    // Normalized position 0-100
+  y          Float    // Normalized position 0-100
+  score      Int
+  multiplier Int      // 1, 2, 3
+  segment    String   // "S", "D", "T", "B", "O", "M"
+  timestamp  DateTime @default(now())
+  
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  
+  @@map("throws")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

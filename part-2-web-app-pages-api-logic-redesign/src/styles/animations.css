@@ -1,0 +1,320 @@
+/*
+ * Motion for the app, in one place.
+ *
+ * Three kinds of movement, and nothing else:
+ *   1. One opening moment  – the logo board draws itself and a dart lands in the bull.
+ *   2. One ambient element – the faint wire board behind the page turns very slowly.
+ *   3. Answers to actions  – a tab opens, a dart lands, a number changes, a game starts.
+ *
+ * Everything is switched off for people who ask for reduced motion (see the end of the file).
+ */
+
+@property --oche-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* ---------- 1. Opening moment: the logo ---------- */
+
+@keyframes mark-ring-draw {
+  from { stroke-dashoffset: var(--ring-length); opacity: 0; }
+  15%  { opacity: 1; }
+  to   { stroke-dashoffset: 0; opacity: 1; }
+}
+
+@keyframes mark-segments-in {
+  from { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+  to   { opacity: 1; transform: rotate(0deg) scale(1); }
+}
+
+@keyframes mark-bull-in {
+  from { transform: scale(0); }
+  70%  { transform: scale(1.25); }
+  to   { transform: scale(1); }
+}
+
+@keyframes mark-dart-fly {
+  from { transform: translate(34px, -34px) scale(1.6); opacity: 0; }
+  20%  { opacity: 1; }
+  70%  { transform: translate(0, 0) scale(1); }
+  80%  { transform: translate(0, 0) rotate(-7deg); }
+  90%  { transform: translate(0, 0) rotate(4deg); }
+  to   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+}
+
+@keyframes mark-thud {
+  from { transform: scale(1); }
+  40%  { transform: scale(0.94); }
+  to   { transform: scale(1); }
+}
+
+@keyframes title-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.board-mark { animation: mark-thud 260ms ease-out 1180ms both; }
+.board-mark .mark-ring {
+  stroke-dasharray: var(--ring-length);
+  animation: mark-ring-draw 700ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.board-mark .mark-ring-2 { animation-delay: 120ms; }
+.board-mark .mark-segments {
+  transform-origin: 50% 50%;
+  transform-box: view-box;
+  animation: mark-segments-in 620ms cubic-bezier(0.2, 0.8, 0.2, 1) 260ms both;
+}
+.board-mark .mark-bull {
+  transform-origin: 50% 50%;
+  transform-box: view-box;
+  animation: mark-bull-in 320ms ease-out 620ms both;
+}
+.board-mark .mark-dart {
+  transform-origin: 50% 50%;
+  transform-box: view-box;
+  animation: mark-dart-fly 520ms cubic-bezier(0.5, 0, 0.9, 0.6) 760ms both;
+}
+
+.title-rise { animation: title-rise 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both; }
+.title-rise-late { animation: title-rise 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 320ms both; }
+
+/* ---------- 2. Ambient: the wire board behind the page ---------- */
+
+@keyframes backdrop-turn {
+  to { transform: rotate(360deg); }
+}
+
+.backdrop-board {
+  transform-origin: 50% 50%;
+  animation: backdrop-turn 240s linear infinite;
+}
+
+/* ---------- 3. Answers to actions ---------- */
+
+/* A tab panel or card settles into place when it opens. */
+@keyframes settle-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.settle-in { animation: settle-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* Children arrive one after another (player cards, stat tiles). */
+.stagger-in > * { animation: settle-in 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.stagger-in > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-in > *:nth-child(2) { animation-delay: 70ms; }
+.stagger-in > *:nth-child(3) { animation-delay: 140ms; }
+.stagger-in > *:nth-child(4) { animation-delay: 210ms; }
+.stagger-in > *:nth-child(5) { animation-delay: 280ms; }
+.stagger-in > *:nth-child(n + 6) { animation-delay: 350ms; }
+
+/* The "game on" banner drops in, then a light passes over it once. */
+@keyframes banner-drop {
+  from { opacity: 0; transform: translateY(-18px) scale(0.98); }
+  60%  { opacity: 1; transform: translateY(3px) scale(1); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes light-sweep {
+  from { transform: translateX(-120%) skewX(-18deg); }
+  to   { transform: translateX(320%) skewX(-18deg); }
+}
+
+.banner-drop {
+  position: relative;
+  overflow: hidden;
+  animation: banner-drop 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.banner-drop::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.28), transparent);
+  animation: light-sweep 900ms ease-out 420ms both;
+  pointer-events: none;
+}
+
+/* Main call-to-action: the same light passes over it on hover or focus. */
+.cta-sheen {
+  position: relative;
+  overflow: hidden;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.cta-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.3), transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  pointer-events: none;
+}
+.cta-sheen:hover::after,
+.cta-sheen:focus-visible::after { animation: light-sweep 700ms ease-out both; }
+.cta-sheen:hover { box-shadow: 0 10px 30px -10px rgb(230 178 58 / 0.55); }
+.cta-sheen:active { transform: scale(0.97); }
+
+/* A dart lands on the board: the pin drops in, a ring spreads from the point. */
+@keyframes impact-ring {
+  from { transform: translate(-50%, -50%) scale(0.2); opacity: 0.95; }
+  to   { transform: translate(-50%, -50%) scale(3.4); opacity: 0; }
+}
+
+@keyframes impact-pin {
+  from { transform: translate(-50%, -50%) translate(26px, -34px) scale(2.4); opacity: 0; }
+  35%  { opacity: 1; }
+  60%  { transform: translate(-50%, -50%) scale(0.85); }
+  78%  { transform: translate(-50%, -50%) scale(1.15); }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes impact-score {
+  from { transform: translate(-50%, 0) scale(0.6); opacity: 0; }
+  25%  { transform: translate(-50%, -22px) scale(1.1); opacity: 1; }
+  75%  { transform: translate(-50%, -30px) scale(1); opacity: 1; }
+  to   { transform: translate(-50%, -44px) scale(0.95); opacity: 0; }
+}
+
+.impact-ring { animation: impact-ring 620ms ease-out both; }
+.impact-ring-late { animation: impact-ring 620ms ease-out 140ms both; }
+.impact-pin { animation: impact-pin 360ms cubic-bezier(0.3, 0, 0.7, 1) both; }
+.impact-score { animation: impact-score 1100ms ease-out 120ms both; }
+
+/* A score chip pops in when a dart is added. */
+@keyframes chip-pop {
+  from { transform: scale(0.5) rotate(-6deg); opacity: 0; }
+  60%  { transform: scale(1.12) rotate(2deg); opacity: 1; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.chip-pop { animation: chip-pop 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* The caller: the three-dart total announced over the board. */
+@keyframes callout-number {
+  from { transform: scale(2.6); opacity: 0; filter: blur(8px); }
+  18%  { transform: scale(0.92); opacity: 1; filter: blur(0); }
+  26%  { transform: scale(1.06); }
+  34%  { transform: scale(1); }
+  82%  { transform: scale(1); opacity: 1; }
+  to   { transform: scale(1.25); opacity: 0; }
+}
+
+@keyframes callout-words {
+  from { opacity: 0; transform: translateY(12px); letter-spacing: 0.3em; }
+  30%  { opacity: 1; transform: translateY(0); letter-spacing: 0.06em; }
+  82%  { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes callout-veil {
+  from { opacity: 0; }
+  15%  { opacity: 1; }
+  80%  { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.callout-veil { animation: callout-veil 1900ms ease-out both; }
+.callout-number { animation: callout-number 1900ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.callout-words { animation: callout-words 1900ms ease-out 80ms both; }
+
+/* The player at the oche: a brass light travels round their card. */
+@keyframes oche-travel {
+  to { --oche-angle: 360deg; }
+}
+
+.at-the-oche {
+  position: relative;
+  isolation: isolate;
+}
+.at-the-oche::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--oche-angle),
+    transparent 0deg,
+    var(--color-brass-300) 50deg,
+    transparent 110deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: oche-travel 3.2s linear infinite;
+  pointer-events: none;
+}
+
+/* Bars grow from the left when they first appear. */
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.bar-grow {
+  transform-origin: left center;
+  animation: bar-grow 800ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms both;
+}
+
+/* The "live" dot. */
+@keyframes live-ping {
+  from { transform: scale(1); opacity: 0.7; }
+  to   { transform: scale(2.6); opacity: 0; }
+}
+
+.live-dot { position: relative; }
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: live-ping 1.6s ease-out infinite;
+}
+
+/* Cards that can be pressed lift slightly. */
+.press-lift { transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+.press-lift:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-brass-500);
+  box-shadow: 0 14px 30px -18px rgb(0 0 0 / 0.8);
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .board-mark,
+  .board-mark *,
+  .title-rise,
+  .title-rise-late,
+  .backdrop-board,
+  .settle-in,
+  .stagger-in > *,
+  .banner-drop,
+  .banner-drop::after,
+  .cta-sheen::after,
+  .impact-ring,
+  .impact-ring-late,
+  .impact-pin,
+  .impact-score,
+  .chip-pop,
+  .callout-veil,
+  .callout-number,
+  .callout-words,
+  .at-the-oche::before,
+  .bar-grow,
+  .live-dot::after {
+    animation: none !important;
+  }
+  .impact-ring,
+  .impact-ring-late,
+  .impact-score { display: none; }
+  .press-lift,
+  .cta-sheen { transition: none; }
+  .press-lift:hover { transform: none; }
+}

@@ -1,0 +1,153 @@
+/*
+ * Theme: "Under the board light"
+ *
+ * Every colour is taken from a dartboard and the room around it:
+ *   baize  – the dark green cloth behind the board (page and panel neutrals)
+ *   chalk  – scoreboard chalk (text)
+ *   brass  – the number ring and wire (primary actions, highlights)
+ *   ember  – the warm lamp over the board (secondary accent, warnings)
+ *   bull   – the red of the bullseye (danger, stop, bust)
+ *   mint   – the green segments, brightened (success, active player, live)
+ *
+ * Each scale uses the usual 50–950 steps, so utilities such as
+ * bg-baize-800, text-brass-400 or from-brass-600 work everywhere.
+ */
+
+@theme {
+  --color-baize-50: #f4f1e6;
+  --color-baize-100: #e9e6d6;
+  --color-baize-200: #d3d6c3;
+  --color-baize-300: #b3bfa9;
+  --color-baize-400: #8ea48f;
+  --color-baize-500: #6a8674;
+  --color-baize-600: #49695a;
+  --color-baize-700: #2c4c40;
+  --color-baize-800: #1a372e;
+  --color-baize-900: #112820;
+  --color-baize-950: #091913;
+
+  --color-chalk: #f7f1e1;
+
+  --color-brass-50: #fdf7e3;
+  --color-brass-100: #faedc0;
+  --color-brass-200: #f5dc8c;
+  --color-brass-300: #efc95a;
+  --color-brass-400: #e6b23a;
+  --color-brass-500: #cf9422;
+  --color-brass-600: #9a6614;
+  --color-brass-700: #7c5012;
+  --color-brass-800: #644013;
+  --color-brass-900: #472d10;
+  --color-brass-950: #281807;
+
+  --color-ember-50: #fff3e8;
+  --color-ember-100: #ffe2c7;
+  --color-ember-200: #ffc48f;
+  --color-ember-300: #fda25a;
+  --color-ember-400: #f5823a;
+  --color-ember-500: #e26522;
+  --color-ember-600: #b94a14;
+  --color-ember-700: #963a13;
+  --color-ember-800: #773015;
+  --color-ember-900: #512110;
+  --color-ember-950: #2c1007;
+
+  --color-bull-50: #fff0f0;
+  --color-bull-100: #ffdcdc;
+  --color-bull-200: #ffb9b9;
+  --color-bull-300: #ff8f8f;
+  --color-bull-400: #f7605f;
+  --color-bull-500: #e63c3d;
+  --color-bull-600: #c62828;
+  --color-bull-700: #a01f22;
+  --color-bull-800: #7f1c20;
+  --color-bull-900: #561517;
+  --color-bull-950: #2f0a0b;
+
+  --color-mint-50: #ecfdf3;
+  --color-mint-100: #d0f8e0;
+  --color-mint-200: #a6efc5;
+  --color-mint-300: #7ee2a8;
+  --color-mint-400: #4fd38c;
+  --color-mint-500: #25b872;
+  --color-mint-600: #118353;
+  --color-mint-700: #0f6b45;
+  --color-mint-800: #10553a;
+  --color-mint-900: #0e402d;
+  --color-mint-950: #062419;
+}
+
+/* Tokens used by the shared UI primitives (dialogs, selects, inputs, toasts).
+   The app is designed dark, so light and dark mode share one set. */
+:root,
+.dark {
+  --radius: 0.75rem;
+  --background: var(--color-baize-950);
+  --foreground: var(--color-chalk);
+  --card: var(--color-baize-900);
+  --card-foreground: var(--color-chalk);
+  --popover: var(--color-baize-900);
+  --popover-foreground: var(--color-chalk);
+  --primary: var(--color-brass-400);
+  --primary-foreground: var(--color-baize-950);
+  --secondary: var(--color-baize-800);
+  --secondary-foreground: var(--color-chalk);
+  --muted: var(--color-baize-800);
+  --muted-foreground: var(--color-baize-300);
+  --accent: var(--color-baize-700);
+  --accent-foreground: var(--color-chalk);
+  --destructive: var(--color-bull-500);
+  --border: var(--color-baize-700);
+  --input: var(--color-baize-600);
+  --ring: var(--color-brass-400);
+  --chart-1: var(--color-brass-400);
+  --chart-2: var(--color-mint-400);
+  --chart-3: var(--color-ember-400);
+  --chart-4: var(--color-bull-400);
+  --chart-5: var(--color-baize-300);
+  --sidebar: var(--color-baize-900);
+  --sidebar-foreground: var(--color-chalk);
+  --sidebar-primary: var(--color-brass-400);
+  --sidebar-primary-foreground: var(--color-baize-950);
+  --sidebar-accent: var(--color-baize-800);
+  --sidebar-accent-foreground: var(--color-chalk);
+  --sidebar-border: var(--color-baize-700);
+  --sidebar-ring: var(--color-brass-400);
+}
+
+/* Native form controls (checkboxes, range sliders) pick up the brass accent */
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: var(--color-brass-400);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--color-brass-400);
+  border: 3px solid var(--color-baize-950);
+  box-shadow: 0 0 0 1px var(--color-brass-300);
+  transition: transform 120ms ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--color-brass-400);
+  border: 3px solid var(--color-baize-950);
+  box-shadow: 0 0 0 1px var(--color-brass-300);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input[type="range"]::-webkit-slider-thumb {
+    transition: none;
+  }
+}

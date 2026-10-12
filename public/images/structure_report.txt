@@ -1,0 +1,43 @@
+📋 IMAGE DIRECTORY STRUCTURE REPORT
+==================================================
+Base Path: /home/z/my-project/public/images
+Generated: 1760899693.62868
+
+📁 ARUCO
+------------------------------
+  Status: ✅ Exists
+  Files: 1
+    📄 .gitkeep (0 bytes)
+
+📁 DARTBOARDS
+------------------------------
+  Status: ✅ Exists
+  Files: 2
+    📄 dartboard_placeholder.svg (2622 bytes)
+    📄 .gitkeep (0 bytes)
+
+📁 SAMPLES
+------------------------------
+  Status: ✅ Exists
+  Files: 2
+    📄 dart_position_sample.svg (3879 bytes)
+    📄 .gitkeep (0 bytes)
+
+📁 MARKERS
+------------------------------
+  Status: ✅ Exists
+  Files: 14
+    📄 marker_3_placeholder.txt (471 bytes)
+    📄 marker_1_description.txt (377 bytes)
+    📄 create_text_markers.py (6878 bytes)
+    📄 placement_guide.txt (1632 bytes)
+    📄 marker_2_description.txt (379 bytes)
+    📄 all_markers_description.txt (1115 bytes)
+    📄 marker_3_description.txt (381 bytes)
+    📄 marker_0_placeholder.txt (471 bytes)
+    📄 create_simple_markers.py (6425 bytes)
+    📄 .gitkeep (0 bytes)
+    📄 marker_2_placeholder.txt (471 bytes)
+    📄 generate_aruco_markers.py (3781 bytes)
+    📄 marker_1_placeholder.txt (471 bytes)
+    📄 marker_0_description.txt (383 bytes)

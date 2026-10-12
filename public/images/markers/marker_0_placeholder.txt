@@ -1,0 +1,20 @@
+ArUco Marker 0 - Placeholder File
+
+This file should be replaced with: marker_0.png
+
+How to create the marker:
+1. Install OpenCV: pip install opencv-python
+2. Run: python generate_aruco_markers.py
+3. OR use online generator: https://chev.me/arucogen/
+
+Marker specifications:
+- Dictionary: 4x4_50
+- ID: 0
+- Size: 200x200 pixels
+- Format: PNG
+
+Placement on dartboard:
+- ID 0: Top-left corner
+- ID 1: Top-right corner  
+- ID 2: Bottom-left corner
+- ID 3: Bottom-right corner

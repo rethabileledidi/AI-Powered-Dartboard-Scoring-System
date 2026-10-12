@@ -1,0 +1,11 @@
+Marker ID: 1
+Name: Top-Right Marker
+Position: TR
+Description: Diagonal pattern marker for top-right corner
+Pattern: Two diagonal lines crossing at center
+
+Placement Instructions:
+- Place this marker in the TR corner of the dartboard
+- Ensure the marker is flat and fully visible
+- Maintain consistent distance from dartboard edge
+- Avoid shadows or glare on the marker surface

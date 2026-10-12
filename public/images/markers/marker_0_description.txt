@@ -1,0 +1,11 @@
+Marker ID: 0
+Name: Top-Left Marker
+Position: TL
+Description: Cross pattern marker for top-left corner
+Pattern: Horizontal and vertical lines crossing at center
+
+Placement Instructions:
+- Place this marker in the TL corner of the dartboard
+- Ensure the marker is flat and fully visible
+- Maintain consistent distance from dartboard edge
+- Avoid shadows or glare on the marker surface

@@ -1,0 +1,32 @@
+ArUco Marker Set Description
+==================================================
+
+Marker 0 (TL): Top-Left Marker
+Description: Cross pattern marker for top-left corner
+Pattern: Horizontal and vertical lines crossing at center
+
+Marker 1 (TR): Top-Right Marker
+Description: Diagonal pattern marker for top-right corner
+Pattern: Two diagonal lines crossing at center
+
+Marker 2 (BL): Bottom-Left Marker
+Description: Square pattern marker for bottom-left corner
+Pattern: Concentric squares with thick borders
+
+Marker 3 (BR): Bottom-Right Marker
+Description: Circle pattern marker for bottom-right corner
+Pattern: Concentric circles with thick borders
+
+Placement Guide:
+--------------------
+1. Print all 4 marker files
+2. Place markers on dartboard corners:
+   - Marker 0 (TL): Top-left corner
+   - Marker 1 (TR): Top-right corner
+   - Marker 2 (BL): Bottom-left corner
+   - Marker 3 (BR): Bottom-right corner
+3. Ensure all markers are at the same height and distance
+4. Test with the detection system
+
+Note: These are text descriptions for development purposes.
+Replace with actual image markers when OpenCV is available.

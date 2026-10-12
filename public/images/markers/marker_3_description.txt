@@ -1,0 +1,11 @@
+Marker ID: 3
+Name: Bottom-Right Marker
+Position: BR
+Description: Circle pattern marker for bottom-right corner
+Pattern: Concentric circles with thick borders
+
+Placement Instructions:
+- Place this marker in the BR corner of the dartboard
+- Ensure the marker is flat and fully visible
+- Maintain consistent distance from dartboard edge
+- Avoid shadows or glare on the marker surface

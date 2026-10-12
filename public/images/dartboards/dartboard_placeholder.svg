@@ -1,0 +1,57 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dartboard Background -->
+  <circle cx="200" cy="200" r="190" fill="#2d3748" stroke="#1a202c" stroke-width="2"/>
+  
+  <!-- Outer Ring -->
+  <circle cx="200" cy="200" r="180" fill="#e2e8f0" stroke="#1a202c" stroke-width="1"/>
+  <circle cx="200" cy="200" r="170" fill="#2d3748" stroke="#1a202c" stroke-width="1"/>
+  
+  <!-- Double Ring -->
+  <circle cx="200" cy="200" r="160" fill="#e2e8f0" stroke="#1a202c" stroke-width="1"/>
+  <circle cx="200" cy="200" r="150" fill="#2d3748" stroke="#1a202c" stroke-width="1"/>
+  
+  <!-- Main Scoring Area -->
+  <circle cx="200" cy="200" r="140" fill="#e2e8f0" stroke="#1a202c" stroke-width="1"/>
+  
+  <!-- Triple Ring -->
+  <circle cx="200" cy="200" r="100" fill="#2d3748" stroke="#1a202c" stroke-width="1"/>
+  <circle cx="200" cy="200" r="90" fill="#e2e8f0" stroke="#1a202c" stroke-width="1"/>
+  
+  <!-- Inner Area -->
+  <circle cx="200" cy="200" r="50" fill="#2d3748" stroke="#1a202c" stroke-width="1"/>
+  
+  <!-- Bullseye -->
+  <circle cx="200" cy="200" r="15" fill="#22c55e" stroke="#1a202c" stroke-width="1"/>
+  <circle cx="200" cy="200" r="8" fill="#ef4444" stroke="#1a202c" stroke-width="1"/>
+  
+  <!-- Section Lines (simplified - 8 sections instead of 20) -->
+  <g stroke="#1a202c" stroke-width="1" fill="none">
+    <line x1="200" y1="10" x2="200" y2="390"/>
+    <line x1="10" y1="200" x2="390" y2="200"/>
+    <line x1="59" y1="59" x2="341" y2="341"/>
+    <line x1="341" y1="59" x2="59" y2="341"/>
+  </g>
+  
+  <!-- Center Crosshair for Calibration -->
+  <g stroke="#ef4444" stroke-width="2" fill="none">
+    <line x1="180" y1="200" x2="220" y2="200"/>
+    <line x1="200" y1="180" x2="200" y2="220"/>
+  </g>
+  
+  <!-- Corner Marker Positions (for ArUco markers) -->
+  <g fill="#22c55e" stroke="#1a202c" stroke-width="1">
+    <circle cx="20" cy="20" r="5"/>
+    <circle cx="380" cy="20" r="5"/>
+    <circle cx="20" cy="380" r="5"/>
+    <circle cx="380" cy="380" r="5"/>
+  </g>
+  
+  <!-- Text Labels -->
+  <text x="200" y="30" text-anchor="middle" font-family="Arial" font-size="12" fill="#1a202c">20</text>
+  <text x="370" y="205" text-anchor="middle" font-family="Arial" font-size="12" fill="#1a202c">6</text>
+  <text x="200" y="380" text-anchor="middle" font-family="Arial" font-size="12" fill="#1a202c">3</text>
+  <text x="30" y="205" text-anchor="middle" font-family="Arial" font-size="12" fill="#1a202c">11</text>
+  
+  <!-- Placeholder Text -->
+  <text x="200" y="200" text-anchor="middle" font-family="Arial" font-size="14" fill="#ef4444" font-weight="bold">DARTBOARD</text>
+</svg>

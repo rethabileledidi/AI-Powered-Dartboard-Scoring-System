@@ -1,0 +1,11 @@
+Marker ID: 2
+Name: Bottom-Left Marker
+Position: BL
+Description: Square pattern marker for bottom-left corner
+Pattern: Concentric squares with thick borders
+
+Placement Instructions:
+- Place this marker in the BL corner of the dartboard
+- Ensure the marker is flat and fully visible
+- Maintain consistent distance from dartboard edge
+- Avoid shadows or glare on the marker surface

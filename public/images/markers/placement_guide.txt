@@ -1,0 +1,48 @@
+DARTBOARD MARKER PLACEMENT GUIDE
+========================================
+
+Overview:
+This guide explains how to place markers on your dartboard
+for computer vision detection and calibration.
+
+Required Materials:
+- 4 ArUco markers (or placeholder descriptions)
+- Dartboard with clear corner access
+- Tape or adhesive for marker placement
+- Measuring tape for consistent positioning
+
+Placement Instructions:
+1. Prepare your dartboard - ensure it's mounted securely
+2. Measure 2-3 inches from each corner of the dartboard
+3. Place markers according to the following scheme:
+
+   TOP-LEFT (Marker 0):
+   - Position: Upper-left corner area
+   - Distance: 2 inches from top and left edges
+   - Orientation: Upright, readable from front
+
+   TOP-RIGHT (Marker 1):
+   - Position: Upper-right corner area
+   - Distance: 2 inches from top and right edges
+   - Orientation: Upright, readable from front
+
+   BOTTOM-LEFT (Marker 2):
+   - Position: Lower-left corner area
+   - Distance: 2 inches from bottom and left edges
+   - Orientation: Upright, readable from front
+
+   BOTTOM-RIGHT (Marker 3):
+   - Position: Lower-right corner area
+   - Distance: 2 inches from bottom and right edges
+   - Orientation: Upright, readable from front
+
+Testing:
+1. Use the detection system to verify marker visibility
+2. Check that all 4 markers are detected consistently
+3. Adjust lighting if detection is unreliable
+4. Test different camera angles for optimal results
+
+Troubleshooting:
+- Markers not detected: Check lighting and camera angle
+- Inconsistent detection: Ensure markers are flat and secure
+- Poor calibration: Verify marker positions and distances

@@ -1,0 +1,18 @@
+# AI Model Training Configuration
+# Paths are relative to this config file
+
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+# Number of classes (example: 3 dartboard regions)
+nc: 3
+
+# Class names (example: bullseye, inner_ring, outer_ring)
+names: ['bullseye', 'inner_ring', 'outer_ring']
+
+# Note: Label files should be placed in corresponding labels/ folders
+# Label format: YOLO txt format - "class x_center y_center width height"
+# All values are normalized (0-1) relative to image dimensions
+# Example label file content:
+# 0 0.5 0.5 0.1 0.1  (class 0 at center, 10% size)

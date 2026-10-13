@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Dart Scorer - Leaderboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .game-id {
+            font-size: 0.9em;
+            opacity: 0.8;
+            font-family: monospace;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .add-score-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .leaderboard {
+            background: white;
+        }
+        
+        .leaderboard h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .leaderboard-list {
+            list-style: none;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .leaderboard-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .leaderboard-item:nth-child(1) {
+            background: linear-gradient(45deg, #f1c40f, #f39c12);
+            color: white;
+            border-left-color: #e67e22;
+        }
+        
+        .leaderboard-item:nth-child(2) {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            color: white;
+            border-left-color: #34495e;
+        }
+        
+        .leaderboard-item:nth-child(3) {
+            background: linear-gradient(45deg, #cd7f32, #b87333);
+            color: white;
+            border-left-color: #8b4513;
+        }
+        
+        .rank {
+            font-weight: bold;
+            font-size: 1.2em;
+            min-width: 30px;
+        }
+        
+        .player-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .timestamp {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+        
+        .score {
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #2c3e50;
+        }
+        
+        .leaderboard-item:nth-child(1) .score,
+        .leaderboard-item:nth-child(2) .score,
+        .leaderboard-item:nth-child(3) .score {
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .leaderboard-item {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+            
+            .score {
+                margin-top: 10px;
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 AI Dart Scorer</h1>
+            <div class="game-id" id="gameId">Loading...</div>
+        </div>
+        
+        <div class="content">
+            <div class="add-score-form">
+                <h3>Add New Score</h3>
+                <form id="scoreForm">
+                    <div class="form-group">
+                        <label for="playerName">Player Name:</label>
+                        <input type="text" id="playerName" name="playerName" required maxlength="50" placeholder="Enter player name">
+                    </div>
+                    <div class="form-group">
+                        <label for="score">Score:</label>
+                        <input type="number" id="score" name="score" required min="0" step="0.01" placeholder="Enter score">
+                    </div>
+                    <button type="submit" class="btn">Add Score</button>
+                </form>
+            </div>
+            
+            <div class="leaderboard">
+                <h2>🏆 Leaderboard</h2>
+                <div id="messageArea"></div>
+                <div id="loadingArea" class="loading">Loading leaderboard...</div>
+                <ul id="leaderboardList" class="leaderboard-list" style="display: none;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API endpoints
+        const API_BASE = '';
+        const GAME_API = `${API_BASE}/api/game`;
+        const SCORE_API = `${API_BASE}/api/score`;
+        const LEADERBOARD_API = `${API_BASE}/api/leaderboard`;
+
+        // DOM elements
+        const scoreForm = document.getElementById('scoreForm');
+        const messageArea = document.getElementById('messageArea');
+        const loadingArea = document.getElementById('loadingArea');
+        const leaderboardList = document.getElementById('leaderboardList');
+        const gameIdElement = document.getElementById('gameId');
+
+        // Utility functions
+        function showMessage(message, type = 'error') {
+            messageArea.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString();
+        }
+
+        function createLeaderboardItem(entry, index) {
+            const li = document.createElement('li');
+            li.className = 'leaderboard-item';
+            
+            li.innerHTML = `
+                <div class="rank">#${index + 1}</div>
+                <div class="player-info">
+                    <div class="player-name">${entry.player}</div>
+                    <div class="timestamp">${formatTimestamp(entry.timestamp)}</div>
+                </div>
+                <div class="score">${entry.score}</div>
+            `;
+            
+            return li;
+        }
+
+        // API functions
+        async function fetchGameInfo() {
+            try {
+                const response = await fetch(GAME_API);
+                if (!response.ok) throw new Error('Failed to fetch game info');
+                
+                const data = await response.json();
+                gameIdElement.textContent = `Game ID: ${data.gameId} | ${data.gameName}`;
+                
+                return data;
+            } catch (error) {
+                console.error('Error fetching game info:', error);
+                gameIdElement.textContent = 'Game ID: Unknown';
+                return null;
+            }
+        }
+
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch(LEADERBOARD_API);
+                if (!response.ok) throw new Error('Failed to fetch leaderboard');
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching leaderboard:', error);
+                throw error;
+            }
+        }
+
+        async function addScore(player, score) {
+            try {
+                const response = await fetch(SCORE_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ player, score: parseFloat(score) })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to add score');
+                }
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error adding score:', error);
+                throw error;
+            }
+        }
+
+        async function loadLeaderboard() {
+            try {
+                loadingArea.style.display = 'block';
+                leaderboardList.style.display = 'none';
+                
+                const leaderboard = await fetchLeaderboard();
+                
+                loadingArea.style.display = 'none';
+                leaderboardList.style.display = 'block';
+                
+                leaderboardList.innerHTML = '';
+                
+                if (leaderboard.length === 0) {
+                    leaderboardList.innerHTML = '<li class="leaderboard-item">No scores yet. Be the first to play!</li>';
+                    return;
+                }
+                
+                leaderboard.forEach((entry, index) => {
+                    const item = createLeaderboardItem(entry, index);
+                    leaderboardList.appendChild(item);
+                });
+                
+            } catch (error) {
+                loadingArea.style.display = 'none';
+                showMessage('Failed to load leaderboard. Please refresh the page.');
+            }
+        }
+
+        // Event listeners
+        scoreForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const playerName = document.getElementById('playerName').value.trim();
+            const score = document.getElementById('score').value;
+            
+            if (!playerName || !score) {
+                showMessage('Please fill in all fields.');
+                return;
+            }
+            
+            const scoreNum = parseFloat(score);
+            if (isNaN(scoreNum) || scoreNum < 0) {
+                showMessage('Please enter a valid score (non-negative number).');
+                return;
+            }
+            
+            try {
+                const submitButton = scoreForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Adding...';
+                
+                await addScore(playerName, scoreNum);
+                
+                showMessage('Score added successfully!', 'success');
+                scoreForm.reset();
+                
+                // Reload leaderboard
+                await loadLeaderboard();
+                
+            } catch (error) {
+                showMessage(error.message || 'Failed to add score. Please try again.');
+            } finally {
+                const submitButton = scoreForm.querySelector('button[type="submit"]');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Add Score';
+            }
+        });
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchGameInfo();
+            await loadLeaderboard();
+            
+            // Refresh leaderboard every 30 seconds
+            setInterval(loadLeaderboard, 30000);
+        });
+    </script>
+</body>
+</html>

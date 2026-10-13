@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .camera-section {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        video {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border-radius: 8px;
+            background: #000;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        button.danger {
+            background: #ef4444;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #10b981;
+            color: white;
+        }
+        .status.error {
+            background: #ef4444;
+            color: white;
+        }
+        .status.info {
+            background: #3b82f6;
+            color: white;
+        }
+        .detection-results {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .dart-item {
+            background: #3a3a3a;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 AI Dart Camera Test</h1>
+        
+        <div class="camera-section">
+            <h2>Camera Feed</h2>
+            <video id="videoElement" autoplay muted playsinline></video>
+            <div>
+                <button id="startBtn">Start Camera</button>
+                <button id="stopBtn" class="danger" disabled>Stop Camera</button>
+                <button id="captureBtn" disabled>Capture Frame</button>
+                <button id="scanBtn" disabled>Start Scanning</button>
+            </div>
+            <div id="status" class="status info">Ready to start camera...</div>
+        </div>
+
+        <div class="detection-results">
+            <h2>Detection Results</h2>
+            <div id="resultsContainer">No detections yet...</div>
+        </div>
+    </div>
+
+    <script>
+        class CameraService {
+            constructor() {
+                this.stream = null;
+                this.videoElement = document.getElementById('videoElement');
+                this.isScanning = false;
+                this.scanInterval = null;
+            }
+
+            async startCamera() {
+                try {
+                    this.updateStatus('Requesting camera access...', 'info');
+                    
+                    this.stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            width: { ideal: 1280, max: 1920 },
+                            height: { ideal: 720, max: 1080 },
+                            facingMode: 'environment',
+                            frameRate: { ideal: 30 }
+                        },
+                        audio: false
+                    });
+
+                    this.videoElement.srcObject = this.stream;
+                    
+                    await new Promise((resolve, reject) => {
+                        const timeout = setTimeout(() => {
+                            reject(new Error('Video element timeout'));
+                        }, 10000);
+
+                        this.videoElement.onloadedmetadata = () => {
+                            clearTimeout(timeout);
+                            this.videoElement.play().then(resolve).catch(reject);
+                        };
+                        
+                        this.videoElement.onerror = () => {
+                            clearTimeout(timeout);
+                            reject(new Error('Video element error'));
+                        };
+                    });
+
+                    this.updateStatus('Camera started successfully!', 'success');
+                    this.updateButtons(true);
+                    
+                } catch (error) {
+                    let errorMessage = 'Failed to access camera';
+                    if (error.message.includes('NotAllowedError')) {
+                        errorMessage = 'Camera access denied. Please allow camera permissions.';
+                    } else if (error.message.includes('NotFoundError')) {
+                        errorMessage = 'No camera found. Please connect a camera.';
+                    } else {
+                        errorMessage = `Camera error: ${error.message}`;
+                    }
+                    
+                    this.updateStatus(errorMessage, 'error');
+                    this.updateButtons(false);
+                }
+            }
+
+            stopCamera() {
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => {
+                        console.log(`Stopping track: ${track.kind}`);
+                        track.stop();
+                    });
+                    this.stream = null;
+                }
+                
+                if (this.videoElement) {
+                    this.videoElement.srcObject = null;
+                    this.videoElement.pause();
+                }
+                
+                this.stopScanning();
+                this.updateStatus('Camera stopped', 'info');
+                this.updateButtons(false);
+            }
+
+            captureFrame() {
+                if (!this.videoElement || this.videoElement.readyState < 2) {
+                    this.updateStatus('Video not ready for capture', 'error');
+                    return null;
+                }
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                if (!ctx) {
+                    this.updateStatus('Failed to get canvas context', 'error');
+                    return null;
+                }
+
+                canvas.width = this.videoElement.videoWidth;
+                canvas.height = this.videoElement.videoHeight;
+                
+                ctx.drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
+                
+                this.updateStatus(`Frame captured: ${canvas.width}x${canvas.height}`, 'success');
+                return canvas;
+            }
+
+            startScanning() {
+                if (this.isScanning) return;
+                
+                this.isScanning = true;
+                this.updateStatus('Scanning started...', 'info');
+                
+                this.scanInterval = setInterval(() => {
+                    this.performDetection();
+                }, 1000); // Scan every second
+            }
+
+            stopScanning() {
+                this.isScanning = false;
+                if (this.scanInterval) {
+                    clearInterval(this.scanInterval);
+                    this.scanInterval = null;
+                }
+                this.updateStatus('Scanning stopped', 'info');
+            }
+
+            async performDetection() {
+                const canvas = this.captureFrame();
+                if (!canvas) return;
+
+                try {
+                    // Simulate dart detection (in real implementation, this would use AI)
+                    const detections = this.simulateDartDetection(canvas.width, canvas.height);
+                    this.displayResults(detections);
+                } catch (error) {
+                    console.error('Detection error:', error);
+                }
+            }
+
+            simulateDartDetection(width, height) {
+                const detections = [];
+                const numDarts = Math.floor(Math.random() * 3) + 1; // 1-3 darts
+                
+                for (let i = 0; i < numDarts; i++) {
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    
+                    // Generate realistic dart positions
+                    const angle = Math.random() * 2 * Math.PI;
+                    const distance = Math.random() * Math.min(width, height) * 0.3 + Math.min(width, height) * 0.1;
+                    
+                    const x = centerX + Math.cos(angle) * distance;
+                    const y = centerY + Math.sin(angle) * distance;
+                    
+                    // Calculate score based on position
+                    const normalizedDistance = distance / (Math.min(width, height) / 2);
+                    let score = 0;
+                    let multiplier = 1;
+                    let className = 'miss';
+                    
+                    if (normalizedDistance < 0.1) {
+                        score = 50;
+                        className = 'bullseye';
+                    } else if (normalizedDistance < 0.2) {
+                        score = 25;
+                        className = 'outer_bull';
+                    } else if (normalizedDistance < 0.8) {
+                        const segment = Math.floor(Math.random() * 20) + 1;
+                        score = segment;
+                        className = `single_${segment}`;
+                    }
+                    
+                    detections.push({
+                        x: x / width,
+                        y: y / height,
+                        score: score * multiplier,
+                        multiplier,
+                        confidence: 0.7 + Math.random() * 0.3,
+                        className
+                    });
+                }
+                
+                return detections;
+            }
+
+            displayResults(detections) {
+                const container = document.getElementById('resultsContainer');
+                
+                if (detections.length === 0) {
+                    container.innerHTML = '<div class="dart-item">No darts detected</div>';
+                    return;
+                }
+                
+                const totalScore = detections.reduce((sum, d) => sum + d.score, 0);
+                
+                let html = `
+                    <div class="dart-item">
+                        <strong>Total Score: ${totalScore}</strong> (${detections.length} darts detected)
+                    </div>
+                `;
+                
+                detections.forEach((detection, index) => {
+                    html += `
+                        <div class="dart-item">
+                            <strong>Dart ${index + 1}:</strong> ${detection.score} points<br>
+                            <small>Position: (${(detection.x * 100).toFixed(1)}%, ${(detection.y * 100).toFixed(1)}%)</small><br>
+                            <small>Type: ${detection.className} | Confidence: ${(detection.confidence * 100).toFixed(1)}%</small>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            }
+
+            updateStatus(message, type) {
+                const status = document.getElementById('status');
+                status.textContent = message;
+                status.className = `status ${type}`;
+                console.log(`Camera Status: ${message}`);
+            }
+
+            updateButtons(cameraActive) {
+                document.getElementById('startBtn').disabled = cameraActive;
+                document.getElementById('stopBtn').disabled = !cameraActive;
+                document.getElementById('captureBtn').disabled = !cameraActive;
+                document.getElementById('scanBtn').disabled = !cameraActive;
+            }
+        }
+
+        // Initialize camera service
+        const cameraService = new CameraService();
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', () => {
+            cameraService.startCamera();
+        });
+
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            cameraService.stopCamera();
+        });
+
+        document.getElementById('captureBtn').addEventListener('click', () => {
+            cameraService.captureFrame();
+        });
+
+        document.getElementById('scanBtn').addEventListener('click', () => {
+            if (cameraService.isScanning) {
+                cameraService.stopScanning();
+                document.getElementById('scanBtn').textContent = 'Start Scanning';
+            } else {
+                cameraService.startScanning();
+                document.getElementById('scanBtn').textContent = 'Stop Scanning';
+            }
+        });
+
+        // Check browser support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            cameraService.updateStatus('Your browser does not support camera access. Please use Chrome, Firefox, or Edge.', 'error');
+        }
+    </script>
+</body>
+</html>

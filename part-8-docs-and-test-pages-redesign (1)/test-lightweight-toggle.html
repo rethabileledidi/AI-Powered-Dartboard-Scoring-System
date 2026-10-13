@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightweight Toggle Test</title>
+    <script>
+        // Mock the lightweight context functionality
+        let lightweightConfig = {
+            enabled: false,
+            autoDetected: false,
+            frameIntervalMs: 100,
+            canvasScale: 1.0,
+            disableHeavyUI: false,
+            smallModel: false
+        };
+
+        function toggleLightweight() {
+            lightweightConfig.enabled = !lightweightConfig.enabled;
+            if (lightweightConfig.enabled) {
+                lightweightConfig.frameIntervalMs = 200;
+                lightweightConfig.canvasScale = 0.7;
+                lightweightConfig.disableHeavyUI = true;
+                lightweightConfig.smallModel = true;
+            } else {
+                lightweightConfig.frameIntervalMs = 100;
+                lightweightConfig.canvasScale = 1.0;
+                lightweightConfig.disableHeavyUI = false;
+                lightweightConfig.smallModel = false;
+            }
+            updateDisplay();
+            localStorage.setItem('lightweight-mode', lightweightConfig.enabled ? 'lightweight' : 'full');
+        }
+
+        function updateDisplay() {
+            const button = document.getElementById('toggleButton');
+            const status = document.getElementById('status');
+            const config = document.getElementById('config');
+            
+            button.textContent = lightweightConfig.enabled ? 'Lightweight ON' : 'Full Power';
+            status.textContent = lightweightConfig.enabled ? 'Lightweight Mode' : 'Full Power Mode';
+            
+            config.innerHTML = `
+                <strong>Configuration:</strong><br>
+                Frame Interval: ${lightweightConfig.frameIntervalMs}ms<br>
+                Canvas Scale: ${lightweightConfig.canvasScale}x<br>
+                Heavy UI Disabled: ${lightweightConfig.disableHeavyUI}<br>
+                Small Model: ${lightweightConfig.smallModel}
+            `;
+        }
+
+        function detectRaspberryPi() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const platform = (navigator.platform || '').toLowerCase();
+            const combined = userAgent + ' ' + platform;
+            
+            return /raspberry|raspi|aarch64|armv7|armv6|linux; arm|chromium.*arm/.test(combined);
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem('lightweight-mode');
+            if (saved === 'lightweight') {
+                lightweightConfig.enabled = true;
+                lightweightConfig.frameIntervalMs = 200;
+                lightweightConfig.canvasScale = 0.7;
+                lightweightConfig.disableHeavyUI = true;
+                lightweightConfig.smallModel = true;
+            } else if (saved === 'full') {
+                lightweightConfig.enabled = false;
+                lightweightConfig.frameIntervalMs = 100;
+                lightweightConfig.canvasScale = 1.0;
+                lightweightConfig.disableHeavyUI = false;
+                lightweightConfig.smallModel = false;
+            } else if (detectRaspberryPi()) {
+                lightweightConfig.enabled = true;
+                lightweightConfig.autoDetected = true;
+                lightweightConfig.frameIntervalMs = 200;
+                lightweightConfig.canvasScale = 0.7;
+                lightweightConfig.disableHeavyUI = true;
+                lightweightConfig.smallModel = true;
+            }
+            updateDisplay();
+        }
+
+        window.onload = function() {
+            loadFromStorage();
+            
+            document.getElementById('toggleButton').addEventListener('click', toggleLightweight);
+            document.getElementById('clearStorage').addEventListener('click', function() {
+                localStorage.removeItem('lightweight-mode');
+                location.reload();
+            });
+            
+            // Show platform detection info
+            document.getElementById('platformInfo').textContent = 
+                `Platform: ${navigator.platform} | User Agent: ${navigator.userAgent}`;
+        };
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .toggle-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .toggle-button:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.lightweight {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.full {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .config {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .platform-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lightweight Toggle Test</h1>
+        
+        <button id="toggleButton" class="toggle-button">Toggle Mode</button>
+        
+        <div id="status" class="status">Loading...</div>
+        
+        <div id="config" class="config">Loading configuration...</div>
+        
+        <button id="clearStorage" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            Clear Storage & Reload
+        </button>
+        
+        <div class="platform-info">
+            <strong>Platform Detection:</strong><br>
+            <span id="platformInfo">Loading...</span>
+        </div>
+    </div>
+</body>
+</html>

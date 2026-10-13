@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Camera - AI Dart Scorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .camera-section {
+            background: rgba(30, 27, 75, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .controls-section {
+            background: rgba(30, 27, 75, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        #videoFeed {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-inactive {
+            background: #ef4444;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+        }
+        
+        .control-group h3 {
+            margin-bottom: 15px;
+            color: #a78bfa;
+            font-size: 1.1rem;
+        }
+        
+        .button {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button.danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+        
+        .button.success {
+            background: linear-gradient(45deg, #10b981, #059669);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a1a1aa;
+            margin-top: 5px;
+        }
+        
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            color: #e4e4e7;
+        }
+        
+        .setting-value {
+            font-size: 14px;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #374151;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .recent-images {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .image-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .image-info {
+            flex: 1;
+        }
+        
+        .image-name {
+            font-size: 14px;
+            color: #e4e4e7;
+            margin-bottom: 5px;
+        }
+        
+        .image-time {
+            font-size: 12px;
+            color: #a1a1aa;
+        }
+        
+        .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-small {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-small:hover {
+            background: rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Enhanced Camera Interface</h1>
+            <p>AI Dart Scorer - Advanced Camera Control System</p>
+        </div>
+        
+        <div class="main-grid">
+            <div class="camera-section">
+                <div class="video-container">
+                    <img id="videoFeed" src="/video_feed" alt="Camera Feed">
+                    <div class="video-overlay">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span id="statusText">Initializing...</span>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCaptures">0</div>
+                        <div class="stat-label">Total Captures</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="fps">30</div>
+                        <div class="stat-label">FPS</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="resolution">1280x720</div>
+                        <div class="stat-label">Resolution</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="quality">95%</div>
+                        <div class="stat-label">Quality</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <div class="control-group">
+                    <h3>📷 Camera Control</h3>
+                    <button class="button" id="startBtn" onclick="startCamera()">Start Camera</button>
+                    <button class="button danger" id="stopBtn" onclick="stopCamera()" disabled>Stop Camera</button>
+                    <button class="button success" onclick="captureImage()">📸 Capture Image</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>⚙️ Auto Capture</h3>
+                    <div class="settings-panel">
+                        <div class="setting-item">
+                            <span class="setting-label">Enable Auto Capture</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoCaptureToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <span class="setting-label">Capture Interval</span>
+                            <span class="setting-value" id="intervalValue">2.0s</span>
+                        </div>
+                    </div>
+                    <button class="button" onclick="updateAutoCapture()">Update Settings</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>📊 Recent Captures</h3>
+                    <div class="recent-images" id="recentImages">
+                        <p style="text-align: center; color: #a1a1aa; padding: 20px;">
+                            No images captured yet
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        let cameraStatus = 'inactive';
+        let autoCaptureEnabled = false;
+        let captureInterval = 2.0;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus();
+            loadRecentImages();
+            setInterval(updateStatus, 5000); // Update status every 5 seconds
+        });
+        
+        async function startCamera() {
+            try {
+                const response = await fetch('/api/camera/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'start' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    cameraStatus = 'active';
+                    updateUI();
+                    showNotification('Camera started successfully!', 'success');
+                } else {
+                    showNotification('Failed to start camera: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error starting camera: ' + error.message, 'error');
+            }
+        }
+        
+        async function stopCamera() {
+            try {
+                const response = await fetch('/api/camera/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'stop' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    cameraStatus = 'inactive';
+                    updateUI();
+                    showNotification('Camera stopped successfully!', 'success');
+                } else {
+                    showNotification('Failed to stop camera: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error stopping camera: ' + error.message, 'error');
+            }
+        }
+        
+        async function captureImage() {
+            try {
+                const response = await fetch('/api/camera/capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        saveToDataset: true,
+                        enhance: true
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Image captured successfully!', 'success');
+                    loadRecentImages();
+                    updateStats();
+                } else {
+                    showNotification('Failed to capture image: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Error capturing image: ' + error.message, 'error');
+            }
+        }
+        
+        async function updateAutoCapture() {
+            autoCaptureEnabled = document.getElementById('autoCaptureToggle').checked;
+            
+            try {
+                const response = await fetch('/api/camera/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action: 'auto_capture',
+                        params: {
+                            enable: autoCaptureEnabled,
+                            interval: captureInterval
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Auto capture settings updated!', 'success');
+                } else {
+                    showNotification('Failed to update auto capture: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error updating auto capture: ' + error.message, 'error');
+            }
+        }
+        
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/camera/stream');
+                const status = await response.json();
+                
+                cameraStatus = status.status;
+                updateUI();
+                updateStats();
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+        
+        function updateUI() {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            
+            if (cameraStatus === 'active') {
+                statusIndicator.className = 'status-indicator status-active';
+                statusText.textContent = 'Camera Active';
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else {
+                statusIndicator.className = 'status-indicator status-inactive';
+                statusText.textContent = 'Camera Inactive';
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        }
+        
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('totalCaptures').textContent = stats.total_images || 0;
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+        
+        async function loadRecentImages() {
+            try {
+                const response = await fetch('/api/camera/images');
+                const data = await response.json();
+                
+                const recentImagesDiv = document.getElementById('recentImages');
+                
+                if (data.images.length === 0) {
+                    recentImagesDiv.innerHTML = '<p style="text-align: center; color: #a1a1aa; padding: 20px;">No images captured yet</p>';
+                    return;
+                }
+                
+                const imagesHtml = data.images.slice(-5).reverse().map(image => `
+                    <div class="image-item">
+                        <div class="image-info">
+                            <div class="image-name">${image.filename}</div>
+                            <div class="image-time">${new Date(image.timestamp).toLocaleString()}</div>
+                        </div>
+                        <div class="image-actions">
+                            <a href="/api/camera/images/${image.filename}" class="btn-small" target="_blank">View</a>
+                        </div>
+                    </div>
+                `).join('');
+                
+                recentImagesDiv.innerHTML = imagesHtml;
+            } catch (error) {
+                console.error('Error loading recent images:', error);
+            }
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Interval slider
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.min = '0.5';
+            slider.max = '10';
+            slider.step = '0.5';
+            slider.value = captureInterval;
+            slider.style.width = '100%';
+            slider.style.marginTop = '10px';
+            
+            slider.addEventListener('input', function() {
+                captureInterval = parseFloat(this.value);
+                document.getElementById('intervalValue').textContent = captureInterval + 's';
+            });
+            
+            document.querySelector('.setting-item:last-child').appendChild(slider);
+        });
+    </script>
+</body>
+</html>

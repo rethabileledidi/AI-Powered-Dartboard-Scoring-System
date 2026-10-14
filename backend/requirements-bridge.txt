@@ -1,0 +1,2 @@
+-r requirements.txt
+ultralytics>=8.2        # YOLOv8 (pulls in PyTorch) - only for scripts/yolo_bridge.py
